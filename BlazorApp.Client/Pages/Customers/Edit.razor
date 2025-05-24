@@ -1,0 +1,107 @@
+﻿@page "/customers/edit/{id:guid}"
+@using BlazorApp.Client.Models
+@rendermode InteractiveAuto
+@inject HttpClient HttpClient
+@inject NavigationManager NavManager
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="row mb-3">
+            <label class="col-md-4 col-form-label">Company Name</label>
+            <div class="col-md-8">
+                <input class="form-control" @bind="Data.CompanyName" />
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <label class="col-md-4 col-form-label">Contact Name</label>
+            <div class="col-md-8">
+                <input class="form-control" @bind="Data.ContactName" />
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <label class="col-md-4 col-form-label">Address</label>
+            <div class="col-md-8">
+                <input class="form-control" @bind="Data.Address" />
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <label class="col-md-4 col-form-label">City</label>
+            <div class="col-md-8">
+                <input class="form-control" @bind="Data.City" />
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <label class="col-md-4 col-form-label">Region</label>
+            <div class="col-md-8">
+                <input class="form-control" @bind="Data.Region" />
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <label class="col-md-4 col-form-label">Postal Code</label>
+            <div class="col-md-8">
+                <input class="form-control" @bind="Data.PostalCode" />
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <label class="col-md-4 col-form-label">Country</label>
+            <div class="col-md-8">
+                <input class="form-control" @bind="Data.Country" />
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <label class="col-md-4 col-form-label">Phone</label>
+            <div class="col-md-8">
+                <input class="form-control" @bind="Data.Phone" />
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="offset-md-4 col-md-4 d-grid">
+                <button class="btn btn-primary" @onclick="SaveCustomer">Save</button>
+            </div>
+            <div class="col-md-4 d-grid">
+                <button class="btn btn-outline-primary" @onclick="Cancel">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public Guid id { get; set; }
+
+    public CreateEditCustomerDto Data { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Load the customer by ID from the API
+        Data = await HttpClient.GetFromJsonAsync<CreateEditCustomerDto>($"https://localhost:7018/api/customers/{id}");
+    }
+
+    protected async Task SaveCustomer()
+    {
+        var response = await HttpClient.PutAsJsonAsync($"https://localhost:7018/api/customers/{id}", Data);
+
+        if (response.IsSuccessStatusCode)
+        {
+            NavManager.NavigateTo("/customers");
+        }
+        else
+        {
+            var strResponse = await response.Content.ReadAsStringAsync();
+            Console.WriteLine(strResponse);
+        }
+    }
+
+    void Cancel()
+    {
+        NavManager.NavigateTo("/customers");
+    }
+}

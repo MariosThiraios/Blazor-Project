@@ -1,0 +1,95 @@
+﻿@page "/customers"
+@using BlazorApp.Client.Models
+@inject HttpClient HttpClient
+@rendermode InteractiveAuto
+
+<a class="btn btn-primary mb-3" href="/customers/create">New Customer</a>
+
+@if (paginatedResult == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Company Name</th>
+                <th>Contact Name</th>
+                <th>Address</th>
+                <th>City</th>
+                <th>Region</th>
+                <th>Postal Code</th>
+                <th>Country</th>
+                <th>Phone</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var customer in paginatedResult.Items)
+            {
+                <tr>
+                    <td>@customer.CompanyName</td>
+                    <td>@customer.ContactName</td>
+                    <td>@customer.Address</td>
+                    <td>@customer.City</td>
+                    <td>@customer.Region</td>
+                    <td>@customer.PostalCode</td>
+                    <td>@customer.Country</td>
+                    <td>@customer.Phone</td>
+                    <td style="white-space:nowrap">
+                        <a class="btn btn-primary btn-sm" href="/customers/edit/@customer.Id">Edit</a>
+                        <a class="btn btn-danger btn-sm" href="/customers/delete/@customer.Id">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <nav>
+        <ul class="pagination">
+            <li class="page-item @(currentPage == 1 ? "disabled" : "")">
+                <button class="page-link" @onclick="() => ChangePage(currentPage - 1)">Previous</button>
+            </li>
+
+            <li class="page-item disabled">
+                <span class="page-link">Page @currentPage of @totalPages</span>
+            </li>
+
+            <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
+                <button class="page-link" @onclick="() => ChangePage(currentPage + 1)">Next</button>
+            </li>
+        </ul>
+    </nav>
+}
+
+@code {
+    private PaginatedResultDto<CustomerDto>? paginatedResult;
+    private int currentPage = 1;
+    private int pageSize = 10;
+    private int totalPages = 1;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadCustomers();
+    }
+
+    private async Task LoadCustomers()
+    {
+        paginatedResult = await HttpClient.GetFromJsonAsync<PaginatedResultDto<CustomerDto>>($"https://localhost:7018/api/customers?Page={currentPage}&PageSize={pageSize}");
+
+        if (paginatedResult != null)
+        {
+            totalPages = (int)Math.Ceiling((double)paginatedResult.TotalCount / pageSize);
+        }
+    }
+
+    private async Task ChangePage(int newPage)
+    {
+        if (newPage < 1 || newPage > totalPages)
+            return;
+
+        currentPage = newPage;
+        await LoadCustomers();
+    }
+}

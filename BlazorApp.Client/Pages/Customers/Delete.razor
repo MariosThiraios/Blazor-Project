@@ -1,0 +1,25 @@
+﻿@page "/customers/delete/{id:guid}"
+@inject HttpClient HttpClient
+@inject NavigationManager navManager
+@rendermode InteractiveAuto
+
+<p>Are you sure you want to delete this customer?</p>
+<button class="btn btn-danger" @onclick="DeleteCustomer">Delete</button>
+<button class="btn btn-outline-primary" @onclick="Cancel">Cancel</button>
+
+@code {
+    [Parameter]
+    public Guid id { get; set; }
+
+    protected async Task DeleteCustomer()
+    {
+        var response = await HttpClient.DeleteAsync("https://localhost:7018/api/customers/" + id);
+
+        navManager.NavigateTo("/customers");
+    }
+
+    void Cancel()
+    {
+        navManager.NavigateTo("/customers");
+    }
+}
