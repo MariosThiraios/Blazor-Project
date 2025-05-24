@@ -1,5 +1,6 @@
 using BlazorApp.Components;
 using BlazorApp.Data;
+using BlazorApp.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,6 +11,16 @@ builder.Services.AddRazorComponents()
     .AddInteractiveWebAssemblyComponents();
 
 builder.Services.AddSingleton<WeatherForecastService>();
+
+builder.Services.AddHttpClient();
+
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.PropertyNamingPolicy = null;
+    });
+
+builder.Services.AddScoped<ICustomerService, CustomerService>();
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -28,10 +39,15 @@ else
     app.UseHsts();
 }
 
+app.UseCors(policy => policy.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());
+
 app.UseHttpsRedirection();
 
 app.UseStaticFiles();
+app.UseRouting();
 app.UseAntiforgery();
+
+app.MapControllers();
 
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode()
