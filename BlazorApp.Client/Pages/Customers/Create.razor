@@ -74,9 +74,9 @@
 </div>
 
 @code {
-    public CreateEditCustomerDto Data { get; set; } = new();
+    private CreateEditCustomerDto Data { get; set; } = new();
 
-    protected async Task SaveCustomer()
+    private async Task SaveCustomer()
     {
         var response = await HttpClient.PostAsJsonAsync("https://localhost:7018/api/customers", Data);
 
@@ -91,7 +91,7 @@
         }
     }
 
-    void Cancel()
+    private void Cancel()
     {
         navManager.NavigateTo("/customers");
     }

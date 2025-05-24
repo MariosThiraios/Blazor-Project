@@ -77,7 +77,7 @@
     [Parameter]
     public Guid id { get; set; }
 
-    public CreateEditCustomerDto Data { get; set; } = new();
+    private CreateEditCustomerDto Data { get; set; } = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -85,7 +85,7 @@
         Data = await HttpClient.GetFromJsonAsync<CreateEditCustomerDto>($"https://localhost:7018/api/customers/{id}");
     }
 
-    protected async Task SaveCustomer()
+    private async Task SaveCustomer()
     {
         var response = await HttpClient.PutAsJsonAsync($"https://localhost:7018/api/customers/{id}", Data);
 
@@ -100,7 +100,7 @@
         }
     }
 
-    void Cancel()
+    private void Cancel()
     {
         NavManager.NavigateTo("/customers");
     }

@@ -69,9 +69,16 @@ else
     private int pageSize = 10;
     private int totalPages = 1;
 
-    protected override async Task OnInitializedAsync()
+    private bool _hasLoaded;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        await LoadCustomers();
+        if (firstRender && !_hasLoaded)
+        {
+            _hasLoaded = true;
+            await LoadCustomers();
+            StateHasChanged();
+        }
     }
 
     private async Task LoadCustomers()

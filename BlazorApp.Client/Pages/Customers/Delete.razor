@@ -11,14 +11,14 @@
     [Parameter]
     public Guid id { get; set; }
 
-    protected async Task DeleteCustomer()
+    private async Task DeleteCustomer()
     {
         var response = await HttpClient.DeleteAsync("https://localhost:7018/api/customers/" + id);
 
         navManager.NavigateTo("/customers");
     }
 
-    void Cancel()
+    private void Cancel()
     {
         navManager.NavigateTo("/customers");
     }
