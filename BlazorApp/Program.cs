@@ -10,8 +10,6 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents()
     .AddInteractiveWebAssemblyComponents();
 
-builder.Services.AddSingleton<WeatherForecastService>();
-
 builder.Services.AddHttpClient();
 
 builder.Services.AddControllers()
